@@ -1,6 +1,7 @@
 from App import app
-from flask import render_template,flash, redirect
+from flask import render_template,flash, redirect, request, jsonify
 from App.form import LoginForm
+
 
 @app.route('/')
 @app.route('/index')
@@ -15,3 +16,13 @@ def login():
             form.Field1.data, form.CheckBox.data))
         return redirect('/index')
     return  render_template("form.html",title = 'Form',form = LoginForm())
+
+@app.route('/requests', methods=['GET'])
+def requests():
+    if request.method == 'GET':
+        requests = {}
+        requests['topic'] = request.args.get('topic')
+        requests['numofmesssages'] =  request.args.get('numofmessages')
+        requests['broker'] = request.args.get('broker')
+
+        return jsonify(requests)
