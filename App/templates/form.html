@@ -1,0 +1,35 @@
+
+
+
+<html>
+
+    <head>
+        {% if title %}
+      <title>{{ title }} - FlatBuffers REST </title>
+      {% else %}
+      <title>FlatBuffers REST</title>
+      {% endif %}
+
+
+        </head></title></head>
+
+
+    <body>
+    <div>REST: <a href="/">Page 1</a><a href="/form">Page 2</a></div>
+    <hr>
+
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.Field1.label }}<br>
+            {{ form.Field1(size=32) }}
+        </p>
+        <p>
+            {{ form.Field2.label }}<br>
+            {{ form.Field2(size=32) }}
+        </p>
+        <p>{{ form.CheckBox() }} {{ form.CheckBox.label }}</p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    </body>
+</html>
