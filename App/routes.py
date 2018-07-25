@@ -5,13 +5,9 @@ from App.form import LoginForm
 from App.errors import error
 
 
-@app.route('/')
-@app.route('/index')
-def index():
-    return render_template("standard.html", title='Page 1')
-
-
 @app.route('/form', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():

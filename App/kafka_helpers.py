@@ -43,13 +43,13 @@ def num_of_messages_int_check(num):
         return error(400, str(e))
 
 
-def parameter_emtpy(topic, broker, num):
+def parameter_empty(topic, broker, num):
     if not topic or not broker or not num:
         raise Exception('One of more of the parameters passed in are empty')
 
 
 def poll_messages(topic, broker, num):
-    parameter_emtpy(topic, broker, num)
+    parameter_empty(topic, broker, num)
     num = num_of_messages_int_check(num)
     broker_exists(broker)
     topic_exists(topic, broker)

@@ -15,7 +15,7 @@
 
 
     <body>
-    <div>REST: <a href="/">Page 1</a><a href="/form">Page 2</a></div>
+    <div>Flatbuffers REST</div>
     <hr>
 
     <form action="" method="post" novalidate>
@@ -29,6 +29,10 @@
             {{ form.Field2(size=32) }}
         </p>
         <p>{{ form.CheckBox() }} {{ form.CheckBox.label }}</p>
+        <p>
+            {{ form.IntField.label }}<br>
+            {{ form.IntField(size=32) }}
+        </p>
         <p>{{ form.submit() }}</p>
     </form>
     </body>
