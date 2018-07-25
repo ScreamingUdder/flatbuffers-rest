@@ -31,7 +31,7 @@ def topic_exists(topic_name, broker):
 def topic_empty(topic_name, broker):
 
     client = KafkaClient(hosts=broker)
-    topic_obj = client.topics.__getitem__(bytes(topic_name, 'utf-8'))
+    topic_obj = client.topics[(bytes(topic_name, 'utf-8'))]
     if topic_obj.earliest_available_offsets() == topic_obj.latest_available_offsets():
         raise Exception("Topic is empty")
 
