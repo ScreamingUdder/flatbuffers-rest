@@ -82,9 +82,9 @@ def get_last_messages(topic, broker, num):
     messages = dict()
     topic_obj = find_topic(broker, topic)
 
-    consumer = topic_obj.get_simple_consumer(auto_offset_reset=common.OffsetType.EARLIEST, reset_offset_on_start=True)
+    consumer = topic_obj.get_simple_consumer(auto_offset_reset=common.OffsetType.LATEST, reset_offset_on_start=True)
     if num > 0:
-        offsets = [(p, op.next_offset - num) for p, op in consumer._partitions.items()]
+        offsets = [(p, op.next_offset - num -2) for p, op in consumer._partitions.items()]# -2 is to fix a problem with it giving 2 less than the user requests
         consumer.reset_offsets(offsets)
     message_num = 1
     if not consumer.consume():
