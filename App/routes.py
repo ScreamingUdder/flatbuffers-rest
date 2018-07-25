@@ -17,9 +17,11 @@ def request_form():
                 form.Field2.data, form.Field1.data, form.IntField.data))
             return redirect('/requestmidpoint')
         elif form.check_high_low.data:
-            flash('Checking the high and low offsets of the {} topic in the {} broker'.format(
-                form.Field2.data, form.Field1.data))
-            return redirect('/requestmidpoint')
+            try:
+                output = check_offsets(form.Field2.data,form.Field1.data)
+            except Exception as e:
+                return error(400,str(e))
+            return jsonify(output)
     return render_template("form.html", title='Form', form=RequestForm())
 
 
