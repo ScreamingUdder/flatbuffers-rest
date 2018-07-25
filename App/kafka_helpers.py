@@ -14,39 +14,38 @@ def broker_exists(broker):
     port = broker.split(':')[1]
     broker = broker.split(':')[0]
 
-    for brokerobj in client.brokers.values():
-        # print (broker + " / " + str(brokerobj.host, encoding="utf-8"))
-        if brokerobj.host == bytes(broker, 'utf-8'):
+    for broker_obj in client.brokers.values():
+        if broker_obj.host == bytes(broker, 'utf-8'):
             return True
     raise Exception("Broker not found")
 
 
-def topic_exists(topicname,broker):
-    topicname = bytes(topicname, 'utf-8')
+def topic_exists(topic_name, broker):
+    topic_name = bytes(topic_name, 'utf-8')
 
     client = KafkaClient(hosts=broker)
-    if not (topicname in client.topics):
+    if not (topic_name in client.topics):
         raise Exception("Topic Name not found")
 
 
-def topic_empty(topicname, broker):
+def topic_empty(topic_name, broker):
 
     client = KafkaClient(hosts=broker)
-    topicobj = client.topics.__getitem__(bytes(topicname, 'utf-8'))
-    if topicobj.earliest_available_offsets() == topicobj.latest_available_offsets():
+    topic_obj = client.topics.__getitem__(bytes(topic_name, 'utf-8'))
+    if topic_obj.earliest_available_offsets() == topic_obj.latest_available_offsets():
         raise Exception("Topic is empty")
 
 
-def numofmessagesintcheck(num):
+def num_of_messages_int_check(num):
     try:
         return int(num)
-    except ValueError as e:
-        return (error(400, str(e)))
+    except TypeError as e:
+        return error(400, str(e))
 
 
 def poll_messages(topic, broker, num):
-    num = numofmessagesintcheck(num)
+    num = num_of_messages_int_check(num)
     broker_exists(broker)
     topic_exists(topic, broker)
-    topic_empty(topic,broker)
-    return (broker,topic,num)
+    topic_empty(topic, broker)
+    return broker, topic, num
