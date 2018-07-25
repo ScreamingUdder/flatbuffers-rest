@@ -20,6 +20,11 @@ def login():
 @app.route('/requests', methods=['GET', 'POST'])
 def requests():
     if request.method == 'GET':
+        if request.args.get('offsets'):
+            try:
+                output = check_offsets(request.args.get('topic'), request.args.get('broker'))
+            except Exception as e:
+                return error(400, str(e))
         try:
             output = poll_messages(request.args.get('topic'), request.args.get('broker'), request.args.get('numofmessages'))
         except Exception as e:
@@ -28,21 +33,3 @@ def requests():
         return jsonify(output)
     else:
         return error(405, 'Invalid HTTP request')
-
-    #     if not requests:
-    #         abort(400)
-    #         return redirect('/')
-    #     elif not requests['topic']:
-    #         abort(400)
-    #         return redirect('/')
-    #     elif not requests['num_of_messages']:
-    #         abort(400)
-    #         return redirect('/')
-    #     elif not requests['broker']:
-    #         abort(400)
-    #         return redirect('/')
-    #     else:
-    #         return jsonify(requests)
-    # else:
-    #     abort(400)
-    #     return redirect('/')
