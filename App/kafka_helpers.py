@@ -1,4 +1,4 @@
-from pykafka import KafkaClient, exceptions
+from pykafka import KafkaClient, exceptions, common
 from App.errors import error
 
 
@@ -50,8 +50,7 @@ def parameter_empty(topic, broker):
 
 def high_low_offsets(topic_name, broker):
 
-    client = KafkaClient(hosts=broker)
-    topic_obj = client.topics[bytes(topic_name, 'utf-8')]
+    topic_obj = find_topic(broker, topic_name)
 
     low_offset = {}
     earliest_offsets = topic_obj.earliest_available_offsets()
@@ -72,13 +71,40 @@ def high_low_offsets(topic_name, broker):
     return {'low offsets': low_offset, 'high offsets': high_offset}
 
 
+def find_topic(broker, topic_name):
+    client = KafkaClient(hosts=broker)
+    topic_obj = client.topics[bytes(topic_name, 'utf-8')]
+    return topic_obj
+
+
+def get_last_messages(topic, broker, num):
+    print("start")
+    messages = dict()
+    topic_obj = find_topic(broker, topic)
+
+    consumer = topic_obj.get_simple_consumer(auto_offset_reset=common.OffsetType.EARLIEST, reset_offset_on_start=True)
+    if num > 0:
+        offsets = [(p, op.next_offset - num) for p, op in consumer._partitions.items()]
+        consumer.reset_offsets(offsets)
+    message_num = 1
+    if not consumer.consume():
+        raise Exception("Failed to consumer from topic: {}".format(topic))
+    if consumer:
+        print("iterating")
+        for message in consumer:
+            print(message)
+            messages["message num: {}".format(message_num)] = message
+    print("Finished iteration")
+    return messages
+
+
 def poll_messages(topic, broker, num):
     parameter_empty(topic, broker)
     num = num_of_messages_int_check(num)
     broker_exists(broker)
     topic_exists(topic, broker)
     topic_empty(topic, broker)
-    return broker, topic, num
+    return get_last_messages(topic, broker, num)
 
 
 def check_offsets(topic, broker):
