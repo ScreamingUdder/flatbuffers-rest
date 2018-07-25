@@ -13,14 +13,16 @@ def request_form():
     form = RequestForm()
     if form.validate_on_submit():
         if form.check_messages.data:
-            flash('Requesting data from the {} topic in the {} broker, requesting {} messages'.format(
-                form.Field2.data, form.Field1.data, form.IntField.data))
-            return redirect('/requestmidpoint')
+            try:
+                output = poll_messages(form.Field2.data, form.Field1.data, str(form.IntField.data))
+            except Exception as e:
+                return error(400, str(e))
+            return jsonify(output)
         elif form.check_high_low.data:
             try:
                 output = check_offsets(form.Field2.data,form.Field1.data)
             except Exception as e:
-                return error(400,str(e))
+                return error(400, str(e))
             return jsonify(output)
     return render_template("form.html", title='Form', form=RequestForm())
 
