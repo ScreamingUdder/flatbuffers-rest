@@ -1,20 +1,31 @@
 from App import app
-from flask import render_template, flash, redirect, request, jsonify, abort
+from flask import render_template, flash, redirect, request, jsonify
 from App.kafka_helpers import poll_messages, check_offsets
-from App.form import LoginForm
+from App.form import RequestForm
 from App.errors import error
 
 
 @app.route('/form', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
+def request_form():
+
+    form = RequestForm()
     if form.validate_on_submit():
-        flash('Login requested for user {}, remember_me={}'.format(
-            form.Field1.data, form.CheckBox.data))
-        return redirect('/index')
-    return render_template("form.html", title='Form', form=LoginForm())
+        if form.check_messages.data:
+            flash('Requesting data from the {} topic in the {} broker, requesting {} messages'.format(
+                form.Field2.data, form.Field1.data, form.IntField.data))
+            return redirect('/requestmidpoint')
+        elif form.check_high_low.data:
+            flash('Checking the high and low offsets of the {} topic in the {} broker'.format(
+                form.Field2.data, form.Field1.data))
+            return redirect('/requestmidpoint')
+    return render_template("form.html", title='Form', form=RequestForm())
+
+
+@app.route('/requestmidpoint')
+def request_form_data():
+    return render_template("form_submitted.html", title="Form Submitted")
 
 
 @app.route('/requests', methods=['GET', 'POST'])
@@ -27,7 +38,9 @@ def requests():
                 return error(400, str(e))
         else:
             try:
-                output = poll_messages(request.args.get('topic'), request.args.get('broker'), request.args.get('numofmessages'))
+                output = poll_messages(request.args.get('topic'),
+                                       request.args.get('broker'),
+                                       request.args.get('numofmessages'))
             except Exception as e:
                 return error(400, str(e))
 

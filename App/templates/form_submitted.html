@@ -16,12 +16,13 @@
         <div>REST: </div>
         <hr>
 
+    {% with messages = get_flashed_messages() %}
 
+        <!--{% for message in messages %}-->
+            {{ message }}
+        <!--{% endfor %}-->
 
-    <h1>Heading</h1>
-
-    <b1>Body</b1>
-
+        {% endwith %}
     </body>
 
     </html>
