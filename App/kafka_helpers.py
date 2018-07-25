@@ -9,7 +9,7 @@ def broker_exists(broker):
     try:
         client = KafkaClient(hosts=broker)
     except exceptions.NoBrokersAvailableError:
-        raise Exception("Client not found")
+        raise Exception("Broker not found")
 
     port = broker.split(':')[1]
     broker = broker.split(':')[0]
@@ -49,11 +49,27 @@ def parameter_empty(topic, broker):
 
 
 def high_low_offsets(topic_name, broker):
+
     client = KafkaClient(hosts=broker)
-    topic_obj = client.topics.__getitem__(bytes(topic_name, 'utf-8'))
-    low_offset = topic_obj.earliest_available_offsets()
-    high_offset = topic_obj.latest_available_offsets()
-    return low_offset, high_offset
+    topic_obj = client.topics[bytes(topic_name, 'utf-8')]
+
+    low_offset = {}
+    earliest_offsets = topic_obj.earliest_available_offsets()
+
+    high_offset = {}
+
+    for i in range(len(earliest_offsets)):
+        if earliest_offsets[i].err != 0:
+            raise Exception("Failed to query offset")
+        low_offset['partition ' + str(i)] = earliest_offsets[i].offset[0]
+
+    latest_offsets = topic_obj.latest_available_offsets()
+
+    for i in range(len(latest_offsets)):
+        if latest_offsets[i].err != 0:
+            raise Exception("Failed to query offset")
+        high_offset['partition ' + str(i)] = latest_offsets[i].offset[0]
+    return {'low offsets': low_offset, 'high offsets': high_offset}
 
 
 def poll_messages(topic, broker, num):
@@ -70,6 +86,4 @@ def check_offsets(topic, broker):
     broker_exists(broker)
     topic_exists(topic, broker)
     topic_empty(topic, broker)
-    high_low_offsets(topic, broker)
-    low_offset, high_offset = high_low_offsets(topic, broker)
-    return broker, topic, low_offset, high_offset
+    return high_low_offsets(topic, broker)
