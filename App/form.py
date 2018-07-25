@@ -9,3 +9,4 @@ class LoginForm(FlaskForm):
     CheckBox = BooleanField('Check low and high offsets?')
     IntField = IntegerField('Messages to retrieve (default - all)', default=0)
     submit = SubmitField('Submit')
+    check_high_low = SubmitField('Check the high and low offsets')

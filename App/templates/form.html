@@ -11,7 +11,7 @@
       {% endif %}
 
 
-        </head></title></head>
+        </head>
 
 
     <body>
@@ -28,12 +28,14 @@
             {{ form.Field2.label }}<br>
             {{ form.Field2(size=32) }}
         </p>
-        <p>{{ form.CheckBox() }} {{ form.CheckBox.label }}</p>
+        <p>{{ form.check_high_low() }}</p>
+
         <p>
             {{ form.IntField.label }}<br>
             {{ form.IntField(size=32) }}
         </p>
         <p>{{ form.submit() }}</p>
+
     </form>
     </body>
 </html>
