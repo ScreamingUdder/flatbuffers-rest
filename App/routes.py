@@ -1,6 +1,6 @@
 from App import app
 from flask import render_template, flash, redirect, request, jsonify, abort
-from App.kafka_helpers import poll_messages
+from App.kafka_helpers import poll_messages, check_offsets
 from App.form import LoginForm
 from App.errors import error
 
@@ -25,10 +25,11 @@ def requests():
                 output = check_offsets(request.args.get('topic'), request.args.get('broker'))
             except Exception as e:
                 return error(400, str(e))
-        try:
-            output = poll_messages(request.args.get('topic'), request.args.get('broker'), request.args.get('numofmessages'))
-        except Exception as e:
-            return error(400, str(e))
+        else:
+            try:
+                output = poll_messages(request.args.get('topic'), request.args.get('broker'), request.args.get('numofmessages'))
+            except Exception as e:
+                return error(400, str(e))
 
         return jsonify(output)
     else:

@@ -43,15 +43,33 @@ def num_of_messages_int_check(num):
         return error(400, str(e))
 
 
-def parameter_empty(topic, broker, num):
-    if not topic or not broker or not num:
+def parameter_empty(topic, broker):
+    if not topic or not broker:
         raise Exception('One of more of the parameters passed in are empty')
 
 
+def high_low_offsets(topic_name, broker):
+    client = KafkaClient(hosts=broker)
+    topic_obj = client.topics.__getitem__(bytes(topic_name, 'utf-8'))
+    low_offset = topic_obj.earliest_available_offsets()
+    high_offset = topic_obj.latest_available_offsets()
+    return low_offset, high_offset
+
+
 def poll_messages(topic, broker, num):
-    parameter_empty(topic, broker, num)
+    parameter_empty(topic, broker)
     num = num_of_messages_int_check(num)
     broker_exists(broker)
     topic_exists(topic, broker)
     topic_empty(topic, broker)
     return broker, topic, num
+
+
+def check_offsets(topic, broker):
+    parameter_empty(topic, broker)
+    broker_exists(broker)
+    topic_exists(topic, broker)
+    topic_empty(topic, broker)
+    high_low_offsets(topic, broker)
+    low_offset, high_offset = high_low_offsets(topic, broker)
+    return broker, topic, low_offset, high_offset
