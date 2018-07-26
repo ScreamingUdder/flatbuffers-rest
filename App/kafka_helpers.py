@@ -38,7 +38,7 @@ def num_of_messages_int_check(num):
     try:
         return int(num)
     except ValueError as e:
-        return error(400, str(e))
+        raise Exception("Number of messages cannot be converted into an int")
 
 
 def parameter_empty(topic, broker):

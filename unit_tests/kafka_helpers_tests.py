@@ -11,7 +11,7 @@ class KafkaHelperTests(unittest.TestCase):
         self.assertEqual(parameter_empty('Topic', 'Broker'), None)
 
     def test_parameter_empty_when_empty(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception, msg='One of more of the parameters passed in are empty'):
             parameter_empty('', '')
 
     def test_default_port_has_port(self):
@@ -20,15 +20,13 @@ class KafkaHelperTests(unittest.TestCase):
     def test_default_port_has_no_port(self):
         self.assertEqual(default_port('hinata.isis.cclrc.ac.uk'), 'hinata.isis.cclrc.ac.uk:9092')
 
-
-class KafkaHelperTestExpectedFails(unittest.TestCase):
-    @unittest.expectedFailure  # On test raises expected error but shows as failed test
     def test_int_check_with_char_input(self):
-        self.assertRaises(ValueError, num_of_messages_int_check('A'))
+        with self.assertRaises(Exception, msg="Number of messages cannot be converted into an int"):
+            num_of_messages_int_check('A')
 
-    @unittest.expectedFailure  # On test raises expected error but shows as failed test
     def test_int_check_with_char_and_int_input(self):
-        self.assertRaises(ValueError, num_of_messages_int_check('23A'))
+        with self.assertRaises(Exception, msg="Number of messages cannot be converted into an int"):
+            num_of_messages_int_check('23A')
 
 
 if __name__ == '__main__':
