@@ -76,7 +76,7 @@ def get_last_messages(topic, broker, num):
 
         for message in consumer:
             print(message)
-            messages["message num: {}".format(message_num)] = deserialize_flatbuffers(message.value)
+            messages["offset num: {}".format(message.offset)] = deserialize_flatbuffers(message.value)
             message_num += 1
             if message_num >= num:
                 break
