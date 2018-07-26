@@ -1,6 +1,6 @@
 from App import app
-from flask import render_template, flash, redirect, request, jsonify
-from App.kafka_helpers import poll_messages, check_offsets
+from flask import render_template, request, jsonify
+from App.helpers.kafka_helpers import poll_messages, check_offsets
 from App.form import RequestForm
 from App.errors import error
 

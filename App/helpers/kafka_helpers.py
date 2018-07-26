@@ -1,5 +1,5 @@
 from pykafka import KafkaClient, exceptions, common
-from App.errors import error
+from App.helpers.parameter_helpers import parameter_empty, num_of_messages_int_check, default_port
 
 
 def get_client(broker, fake=False):
@@ -34,18 +34,6 @@ def topic_empty(topic_name, broker):
         raise Exception("Topic is empty")
 
 
-def num_of_messages_int_check(num):
-    try:
-        return int(num)
-    except ValueError as e:
-        raise Exception("Number of messages cannot be converted into an int")
-
-
-def parameter_empty(topic, broker):
-    if not topic or not broker:
-        raise Exception('One of more of the parameters passed in are empty')
-
-
 def high_low_offsets(topic_name, broker):
     topic_obj = find_topic(broker, topic_name)
 
@@ -78,8 +66,6 @@ def get_last_messages(topic, broker, num):
     messages = dict()
     topic_obj = find_topic(broker, topic)
     consumer = topic_obj.get_simple_consumer(auto_offset_reset=common.OffsetType.LATEST, reset_offset_on_start=True)
-
-
     offsets = [(p, op.next_offset - num - 2) for p, op in consumer._partitions.items()]  # -2 is to fix a bug
     # with it giving 2 less than the user requests
     consumer.reset_offsets(offsets)
@@ -95,12 +81,6 @@ def get_last_messages(topic, broker, num):
             if message_num >= num:
                 break
     return messages
-
-
-def default_port(broker):
-    if ':' not in broker:
-        return broker + ":9092"
-    return broker
 
 
 def poll_messages(topic, broker, num):

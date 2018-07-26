@@ -1,5 +1,5 @@
 import unittest
-from App.kafka_helpers import num_of_messages_int_check, parameter_empty, default_port
+from App.helpers.parameter_helpers import num_of_messages_int_check, parameter_empty, default_port
 
 
 class KafkaHelperTests(unittest.TestCase):
