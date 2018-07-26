@@ -1,8 +1,9 @@
-from App.schema_mappings import schema_map
+from App.schema_mappings import create_schema_map
 from subprocess import run
 from os import path
 
 def deserialize_flatbuffers(message_value):
+    schema_map = create_schema_map()
     file_identifier = (message_value[4:8])
     file_name = schema_map[file_identifier]
     with open(path.join('.', 'temp'), 'wb')as file:
