@@ -1,5 +1,6 @@
 from pykafka import KafkaClient, exceptions, common
 from App.helpers.parameter_helpers import parameter_empty, num_of_messages_int_check, default_port
+from App.deserializer import deserialize_flatbuffers
 
 
 def get_client(broker, fake=False):
@@ -62,7 +63,6 @@ def find_topic(broker, topic_name):
 
 
 def get_last_messages(topic, broker, num):
-    print("start")
     messages = dict()
     topic_obj = find_topic(broker, topic)
     consumer = topic_obj.get_simple_consumer(auto_offset_reset=common.OffsetType.LATEST, reset_offset_on_start=True)
@@ -76,7 +76,7 @@ def get_last_messages(topic, broker, num):
 
         for message in consumer:
             print(message)
-            messages["message num: {}".format(message_num)] = str(message.value)
+            messages["message num: {}".format(message_num)] = deserialize_flatbuffers(message.value)
             message_num += 1
             if message_num >= num:
                 break
