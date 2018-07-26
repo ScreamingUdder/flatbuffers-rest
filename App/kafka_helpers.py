@@ -79,19 +79,21 @@ def get_last_messages(topic, broker, num):
     topic_obj = find_topic(broker, topic)
     consumer = topic_obj.get_simple_consumer(auto_offset_reset=common.OffsetType.LATEST, reset_offset_on_start=True)
 
-    if num > 0:
-        offsets = [(p, op.next_offset - num - 2) for p, op in consumer._partitions.items()]  # -2 is to fix a bug
-        # with it giving 2 less than the user requests
-        consumer.reset_offsets(offsets)
-    message_num = 1
+
+    offsets = [(p, op.next_offset - num - 2) for p, op in consumer._partitions.items()]  # -2 is to fix a bug
+    # with it giving 2 less than the user requests
+    consumer.reset_offsets(offsets)
+    message_num = 0
     if not consumer.consume():
         raise Exception("Failed to consumer from topic: {}".format(topic))
     if consumer:
-        print("iterating")
+
         for message in consumer:
             print(message)
-            messages["message num: {}".format(message_num)] = message
-    print("Finished iteration")
+            messages["message num: {}".format(message_num)] = str(message.value)
+            message_num += 1
+            if message_num >= num:
+                break
     return messages
 
 
