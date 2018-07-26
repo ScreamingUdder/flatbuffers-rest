@@ -3,9 +3,6 @@ from App.errors import error
 
 
 def broker_exists(broker):
-    if ':' not in broker:
-        broker += ':9092'
-
     try:
         client = KafkaClient(hosts=broker)
     except exceptions.NoBrokersAvailableError:
@@ -97,7 +94,14 @@ def get_last_messages(topic, broker, num):
     return messages
 
 
+def default_port(broker):
+    if ':' not in broker:
+        return broker + ":9092"
+    return broker
+
+
 def poll_messages(topic, broker, num):
+    broker = default_port(broker)
     parameter_empty(topic, broker)
     num = num_of_messages_int_check(num)
     broker_exists(broker)
@@ -107,6 +111,7 @@ def poll_messages(topic, broker, num):
 
 
 def check_offsets(topic, broker):
+    broker = default_port(broker)
     parameter_empty(topic, broker)
     broker_exists(broker)
     topic_exists(topic, broker)
