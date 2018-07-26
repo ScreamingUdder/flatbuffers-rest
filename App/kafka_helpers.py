@@ -37,7 +37,7 @@ def topic_empty(topic_name, broker):
 def num_of_messages_int_check(num):
     try:
         return int(num)
-    except TypeError as e:
+    except ValueError as e:
         return error(400, str(e))
 
 
