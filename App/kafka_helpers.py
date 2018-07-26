@@ -2,14 +2,18 @@ from pykafka import KafkaClient, exceptions, common
 from App.errors import error
 
 
-def broker_exists(broker):
+def get_client(broker, fake=False):
+    if fake:
+        pass  # TODO: implement fake client here for testing
     try:
-        client = KafkaClient(hosts=broker)
+        return KafkaClient(hosts=broker)
     except exceptions.NoBrokersAvailableError:
         raise Exception("Broker not found")
 
-    broker = broker.split(':')[0]
 
+def broker_exists(broker):
+    client = get_client(broker)
+    broker = broker.split(':')[0]
     for broker_obj in client.brokers.values():
         if broker_obj.host == bytes(broker, 'utf-8'):
             return True
@@ -18,15 +22,13 @@ def broker_exists(broker):
 
 def topic_exists(topic_name, broker):
     topic_name = bytes(topic_name, 'utf-8')
-
-    client = KafkaClient(hosts=broker)
+    client = get_client(broker)
     if not (topic_name in client.topics):
         raise Exception("Topic Name not found")
 
 
 def topic_empty(topic_name, broker):
-
-    client = KafkaClient(hosts=broker)
+    client = get_client(broker)
     topic_obj = client.topics[(bytes(topic_name, 'utf-8'))]
     if topic_obj.earliest_available_offsets() == topic_obj.latest_available_offsets():
         raise Exception("Topic is empty")
@@ -45,19 +47,17 @@ def parameter_empty(topic, broker):
 
 
 def high_low_offsets(topic_name, broker):
-
     topic_obj = find_topic(broker, topic_name)
 
     low_offset = {}
     earliest_offsets = topic_obj.earliest_available_offsets()
-
-    high_offset = {}
 
     for i in range(len(earliest_offsets)):
         if earliest_offsets[i].err != 0:
             raise Exception("Failed to query offset")
         low_offset['partition ' + str(i)] = earliest_offsets[i].offset[0]
 
+    high_offset = {}
     latest_offsets = topic_obj.latest_available_offsets()
 
     for i in range(len(latest_offsets)):
@@ -68,7 +68,7 @@ def high_low_offsets(topic_name, broker):
 
 
 def find_topic(broker, topic_name):
-    client = KafkaClient(hosts=broker)
+    client = get_client(broker)
     topic_obj = client.topics[bytes(topic_name, 'utf-8')]
     return topic_obj
 
@@ -77,10 +77,11 @@ def get_last_messages(topic, broker, num):
     print("start")
     messages = dict()
     topic_obj = find_topic(broker, topic)
-
     consumer = topic_obj.get_simple_consumer(auto_offset_reset=common.OffsetType.LATEST, reset_offset_on_start=True)
+
     if num > 0:
-        offsets = [(p, op.next_offset - num -2) for p, op in consumer._partitions.items()]# -2 is to fix a problem with it giving 2 less than the user requests
+        offsets = [(p, op.next_offset - num - 2) for p, op in consumer._partitions.items()]  # -2 is to fix a bug
+        # with it giving 2 less than the user requests
         consumer.reset_offsets(offsets)
     message_num = 1
     if not consumer.consume():
