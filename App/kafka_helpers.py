@@ -4,14 +4,13 @@ from App.errors import error
 
 def broker_exists(broker):
     if ':' not in broker:
-        raise Exception("Broker requires port")
+        broker += ':9092'
 
     try:
         client = KafkaClient(hosts=broker)
     except exceptions.NoBrokersAvailableError:
         raise Exception("Broker not found")
 
-    port = broker.split(':')[1]
     broker = broker.split(':')[0]
 
     for broker_obj in client.brokers.values():
