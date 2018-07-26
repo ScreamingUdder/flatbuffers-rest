@@ -1,7 +1,7 @@
 from pykafka import KafkaClient, exceptions, common
 from App.helpers.parameter_helpers import parameter_empty, num_of_messages_int_check, default_port
 from App.deserializer import deserialize_flatbuffers
-
+from flask import jsonify
 
 def get_client(broker, fake=False):
     if fake:

@@ -12,4 +12,5 @@ def deserialize_flatbuffers(message_value):
     run(flatc_args, shell=True)
     with open('./temp.json', 'r') as file:
         read_message = file.read()
+    read_message = read_message.replace('\n','')
     return read_message
