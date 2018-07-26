@@ -1,7 +1,7 @@
 from pykafka import KafkaClient, exceptions, common
 from App.helpers.parameter_helpers import parameter_empty, num_of_messages_int_check, default_port
 from App.deserializer import deserialize_flatbuffers
-from flask import jsonify
+
 
 def get_client(broker, fake=False):
     if fake:
@@ -56,6 +56,16 @@ def high_low_offsets(topic_name, broker):
     return {'low offsets': low_offset, 'high offsets': high_offset}
 
 
+def offset_num_valid(topic_name, broker, num):
+    topic_obj = find_topic(broker, topic_name)
+    earliest_offsets = topic_obj.earliest_available_offsets()
+    latest_offsets = topic_obj.latest_available_offsets()
+    num_offsets_available = latest_offsets[0].offset[0] - earliest_offsets[0].offset[0]
+    print(num_offsets_available)
+    if num >= num_offsets_available:
+        raise Exception("The number of messages requested is more than are available")
+
+
 def find_topic(broker, topic_name):
     client = get_client(broker)
     topic_obj = client.topics[bytes(topic_name, 'utf-8')]
@@ -90,6 +100,7 @@ def poll_messages(topic, broker, num):
     broker_exists(broker)
     topic_exists(topic, broker)
     topic_empty(topic, broker)
+    offset_num_valid(topic, broker, num)
     return get_last_messages(topic, broker, num)
 
 
