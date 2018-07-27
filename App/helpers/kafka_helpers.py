@@ -57,6 +57,8 @@ def high_low_offsets(topic_name, broker):
 
 
 def offset_num_valid(topic_name, broker, num):
+    if num <= 0:
+        raise Exception("Cannot fetch less than one message")
     topic_obj = find_topic(broker, topic_name)
     earliest_offsets = topic_obj.earliest_available_offsets()
     latest_offsets = topic_obj.latest_available_offsets()
