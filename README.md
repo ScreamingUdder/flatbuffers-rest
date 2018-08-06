@@ -1,5 +1,5 @@
 # flatbuffers-rest
-flatbuffers to human readable json output 
+flatbuffers to human readable json output with a REST interface.
 
 Also provides a very basic web interface at the root route.
 
