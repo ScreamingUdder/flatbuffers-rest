@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+  flatbuf-rest:
+    build: .
+    ports:
+      - "5000:80"

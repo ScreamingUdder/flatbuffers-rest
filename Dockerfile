@@ -1,15 +1,7 @@
-FROM python:3
-
-WORKDIR /usr/src/app
+FROM tiangolo/uwsgi-nginx-flask:python3.6
 
 COPY requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY App ./App
-
-COPY main.py ./
-
-EXPOSE 5000
-
-CMD ["python", "main.py"]
+COPY ./app /app
