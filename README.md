@@ -1,6 +1,11 @@
 # flatbuffers-rest
 flatbuffers to human readable json output 
 
+Also provides a very basic web interface at the root route.
+
+To Clone
+--------
+
 Relies on git submodule so clone this repo with
 ```
 git clone --recurse-submodules
