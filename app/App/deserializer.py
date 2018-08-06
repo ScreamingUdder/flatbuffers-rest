@@ -13,7 +13,7 @@ def deserialize_flatbuffers(message_value):
     location = path.join('.', 'streaming-data-types', 'schemas', file_name)
     flatc_args = ('flatc --json '+location + ' -- temp')
     run(flatc_args, shell=True,)
-    with open(path.join('.', 'temp', 'temp.json',)) as file:
+    with open(path.join('.', 'temp.json',)) as file:
         read_message = yaml.load(file)
         # YAML used due to the json not being correctly formatted and unable to read in correctly
 
