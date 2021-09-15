@@ -1,4 +1,4 @@
 pykafka==2.7.0
 Flask==1.0.2
 Flask-WTF==0.14.2
-pyYaml==3.13
+pyYaml==5.4
